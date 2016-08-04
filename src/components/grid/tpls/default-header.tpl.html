@@ -1,5 +1,15 @@
 <!--默认表格头部模板-->
-<th ng-repeat="column in $ctrl.opts.columnsDef track by $index" ng-style="{width:column.width, 'text-align':column.align}">
-	<span ng-bind="column.displayName"></span>
-	<!--<a href="#" class="iconfont icon-iconfontarrowdropdown"></a>-->
+<th ng-repeat="column in $ctrl.opts.columnsDef track by $index"
+
+    ng-class="{'column-sort':column.sort}"
+
+    ng-click="$ctrl.runColumnSorting($index)"
+
+    ng-style="{width:column.width, 'text-align':column.align}">
+
+    <span ng-bind="column.displayName"></span>
+
+    <a ng-if="column.sort"
+       ng-class="{'column-sort-default':$ctrl.sortConfig[$index].type==='default','column-sort-desc':$ctrl.sortConfig[$index].type==='desc','column-sort-asc':$ctrl.sortConfig[$index].type==='asc'}"
+       href="#" class="iconfont icon-sort column-sort-default"></a>
 </th>

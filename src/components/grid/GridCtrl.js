@@ -47,6 +47,42 @@ export default class GridCtrl {
 			this.bodyTemplate = rowCellTemplate.replace(PLACEHOLDER, tpl);
 		});
 
+		// -temp column config
+		this.sortConfig = [];
+		this.opts.columnsDef.forEach(col => {
+			let colConfig = {};
+			switch (typeof col.sort) {
+
+				case 'function':
+
+					colConfig.prop = col.field;
+					colConfig.type = 'default';
+					colConfig.compareFn = col.sort;
+					break;
+				case 'object':
+
+					colConfig.prop = col.sort.prop || col.field;
+					colConfig.type = 'default';
+					colConfig.compareFn = col.sort.onCompare;
+					break;
+				case 'boolean':
+
+					if (col.sort) {
+
+						colConfig.prop = col.field;
+						colConfig.type = 'default';
+					} else {
+
+						colConfig = null;
+					}
+					break;
+				default:
+					colConfig = null;
+					break;
+			}
+			this.sortConfig.push(colConfig);
+		});
+
 		// 刷新页面
 		GridHelper.refresh(this.opts);
 	}
@@ -62,7 +98,7 @@ export default class GridCtrl {
 		const {opts} = this;
 
 		GridHelper
-			.refresh(opts, Object.assign(opts.queryParams || {}, {pageNum, pageSize}))
+			.refresh(opts, Object.assign(opts.queryParams || {}, {pageNum, pageSize}), this.sortConfig)
 			.then(() => this.onRefresh && this.onRefresh({opts}));
 	}
 
@@ -97,4 +133,7 @@ export default class GridCtrl {
 		return findEntity(this.selectedItems, entity) !== -1;
 	}
 
+	runColumnSorting(index) {
+		GridHelper.sort(index, this.opts.data, this.sortConfig);
+	}
 }
